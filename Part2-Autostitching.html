@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="CS194 Project4:&nbsp;Facial Keypoint Detection with Neural Networks">
+    <meta name="description" content="">
+    <meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title>Part2 Autostitching</title>
+    <link rel="stylesheet" href="nicepage.css" media="screen">
+<link rel="stylesheet" href="Part2-Autostitching.css" media="screen">
+    <script class="u-script" type="text/javascript" src="jquery.js" defer=""></script>
+    <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
+    <meta name="generator" content="Nicepage 2.27.1, nicepage.com">
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "",
+		"url": "index.html"
+}</script>
+    <meta property="og:title" content="Part2 Autostitching">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#478ac9">
+    <link rel="canonical" href="index.html">
+    <meta property="og:url" content="index.html">
+  </head>
+  <body class="u-body"><header class="u-clearfix u-header u-palette-1-light-3 u-header" id="sec-509c"><div class="u-clearfix u-sheet u-sheet-1">
+        <h1 class="u-text u-text-palette-1-dark-1 u-text-1">CS194 Project5:&nbsp;<br><b>Image Warping and Mosaicing</b>
+          <br>
+        </h1>
+        <h4 class="u-text u-text-palette-3-base u-text-2">Sainan Chen<br>11/25/2020
+        </h4>
+        <nav class="u-menu u-menu-dropdown u-offcanvas u-menu-1">
+          <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0;">
+            <a class="u-active-palette-1-base u-button-style u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-top-bottom-menu-spacing u-nav-link u-text-active-white u-text-hover-palette-3-base u-text-palette-1-base" href="#">
+              <svg><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#menu-hamburger"></use></svg>
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><symbol id="menu-hamburger" viewBox="0 0 16 16" style="width: 16px; height: 16px;"><rect y="1" width="16" height="2"></rect><rect y="7" width="16" height="2"></rect><rect y="13" width="16" height="2"></rect>
+</symbol>
+</defs></svg>
+            </a>
+          </div>
+          <div class="u-custom-menu u-nav-container">
+            <ul class="u-nav u-unstyled u-nav-1"><li class="u-nav-item"><a class="u-active-palette-1-base u-button-style u-nav-link u-text-active-white u-text-hover-palette-3-base u-text-palette-1-base" href="Introduction.html" style="padding: 10px 36px;">Introduction</a>
+</li><li class="u-nav-item"><a class="u-active-palette-1-base u-button-style u-nav-link u-text-active-white u-text-hover-palette-3-base u-text-palette-1-base" href="Part1-manual-matching.html" style="padding: 10px 36px;">Part1 manual matching</a>
+</li><li class="u-nav-item"><a class="u-active-palette-1-base u-button-style u-nav-link u-text-active-white u-text-hover-palette-3-base u-text-palette-1-base" href="Part2-Autostitching.html" style="padding: 10px 36px;">Part2 Autostitching</a>
+</li><li class="u-nav-item"><a class="u-active-palette-1-base u-button-style u-nav-link u-text-active-white u-text-hover-palette-3-base u-text-palette-1-base" href="Conclusion.html" style="padding: 10px 36px;">Conclusion</a>
+</li></ul>
+          </div>
+          <div class="u-custom-menu u-nav-container-collapse">
+            <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
+              <div class="u-menu-close"></div>
+              <ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-2"><li class="u-nav-item"><a class="u-button-style u-nav-link" href="Introduction.html" style="padding: 10px 36px;">Introduction</a>
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="Part1-manual-matching.html" style="padding: 10px 36px;">Part1 manual matching</a>
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="Part2-Autostitching.html" style="padding: 10px 36px;">Part2 Autostitching</a>
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="Conclusion.html" style="padding: 10px 36px;">Conclusion</a>
+</li></ul>
+            </div>
+            <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
+          </div>
+        </nav>
+      </div></header>
+    <section class="u-clearfix u-section-1" id="sec-b43b">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <p class="u-text u-text-default u-text-1">In this section, I want to further develop the mosaicing to select corresponding opints automatically. I followed Matthew, Richard and Simon's paper <a href="http://matthewalunbrown.com/papers/cvpr05.pdf" class="u-active-none u-border-none u-btn u-button-link u-button-style u-hover-none u-none u-text-palette-1-base u-btn-1" target="_blank">Multi-Image Matching using Multi-Scale Oriented Patches</a>. The main idea is to find all corner points in both images, then cut number of points down and make sure they distribute evenly. Finally, I pair points up by having least squared difference between patches around corresponding points.
+        </p>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-2" id="sec-cdf9">
+      <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Harris Corner Features</h2>
+        <p class="u-text u-text-2">The first step is to find all possible interesting edge/corner points in both images. I used build-in method corner_harris from Python package skimage.feature and <b>discard points at edge with width 50</b> to make sure we can get a 100 pixel * 100 pixel patch around every point later. The resulting points are as below.
+        </p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-1" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-2" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-3" id="sec-9477">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Adaptive Non-Maximal Suppression ANMS</h2>
+        <p class="u-text u-text-default u-text-2">There are too many irrelevant points, so I try to cut the number of points down by picking top 100 points with highest<b> minimum supressing radius ri.</b> ri is defined as the minimum distance from point i to any point which has higher corner strength (returned by corner_harris method) than i even after being multiplied by an user-defined parameter <b>c=0.9</b>:&nbsp;
+        </p>
+        <img src="images/ScreenShot2020-11-25at3.45.19PM.png" alt="" class="u-image u-image-default u-image-1" data-image-width="742" data-image-height="78">
+        <p class="u-text u-text-default u-text-3">Higher the minimum supressing radius, more significant the point is in the whole image. The point with highest ri will be the most important point in the image. The<b> top 100 points with highest minimum supressing radius ri </b>are as below:
+        </p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-2" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-3" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-4" id="sec-99d2">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Feature Descriptor (Multi-scale oriented patch MSOP)</h2>
+        <p class="u-text u-text-2">I want to pair up points&nbsp; who have similar nerighborhood, so I want to describe every point's neighborhood using a patch. Because the input images are 2000 pixel&nbsp; * 1500 pixel, I extract a <b>patch of size 100*100</b> around every point, then <b>normalized</b> it and applied <b>gaussian filter</b> to blur it before finally <b>subsample it to 10*10</b>. Here is an example for producing a patch around a point.
+        </p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-15 u-size-30-md u-image-1" data-image-width="526" data-image-height="526">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-size-15 u-size-30-md u-image-2" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-size-15 u-size-30-md u-image-3" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-3"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-15 u-size-30-md u-image-4" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-5" id="sec-0413">
+      <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Point Pairs Matching</h2>
+        <p class="u-text u-text-default u-text-2">Now with the help of patches, we can pair points up. For every patch i for image 1, I calculate the sum of square difference between pixels in the it and any patch for image 2, and find the patch j for image 2 which produces the smallest SSD (1-NN squared error) and the patch k which produces the second smallest SSD (2-NN squared error). Based on the following plot from the paper, we can assume that if <b>1-NN squared error / 2-NN squared error &lt;0.67</b>, the patch i for image 1 and the patch j for image 2 is a truly corresponding&nbsp; pair.
+        </p>
+        <img src="images/ScreenShot2020-11-25at4.15.19PM.png" alt="" class="u-image u-image-default u-image-1" data-image-width="900" data-image-height="714">
+        <p class="u-text u-text-default u-text-3">All the point pairs left are as below.</p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-2">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-3">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-6" id="sec-7f46">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Random Sample Consensus RANSAC for Homgraphy H</h2>
+        <p class="u-text u-text-default u-text-2">Although most pairs look reasonable, you might notice there are still some unreasonable pairs, like the very left one in image 1 and the one on a window in image 2. To further narrow down to correct pairs, we use RANSAC to find correct set of inliers. The process is:<br>
+          <br>1. For n rounds:<br>&nbsp; &nbsp; Select 4 pairs at random.<br>&nbsp; &nbsp; Compute exact homography H.<br>&nbsp; &nbsp; Create an empty inlier list for this round.&nbsp;<br>&nbsp; &nbsp; For all point pairs, use H to project points for image 1 and compute the error of the result compared to the points for image 2 in that pair. <b>If error&lt;epsilon, put the pair in inlier list</b>.<br>2. Find the <b>inlier list with largest size</b>.<br>3. <b>Recompute homography H</b> using all the pairs in the largest-size inlier list by applying least square regression.<br>
+          <br>I choose <b>epsilon=10000</b> after some experiment.&nbsp; The pairs in the final largest-size inlier list are as below.
+        </p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-1" data-image-width="1600" data-image-height="1067">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-2" data-image-width="1600" data-image-height="1067">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-7" id="sec-6736">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Mosaic Stitching</h2>
+        <p class="u-text u-text-default u-text-2">After I get the precise corresponding points and homography H, I can stitch mosiac in the same way as the previous section. The final result looks as good as&nbsp; what I've done manually.</p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-1" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-2" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="u-text u-text-default u-text-3">We can compare the manual result (left) and automatic (right) result side by side. They look identical.</p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-2">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-3">
+                <div class="u-container-layout u-container-layout-3"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-4" data-image-width="1600" data-image-height="1067">
+                <div class="u-container-layout u-container-layout-4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="u-text u-text-default u-text-4">manual</p>
+        <p class="u-text u-text-default u-text-5">automatic</p>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-8" id="sec-0202">
+      <div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Second Example</h2>
+        <p class="u-text u-text-default u-text-2">In this example, I captures a surface plane of desk. I reduce epsilon to be 5000 here for RANSAC to cut more incorrect pairs. Although the point pairs look very promisive, the stitching result is not ideal. That may be because the surface that I was taking pictures of is actually not a perfect flat plane.</p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-1">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-2">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-2">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-3">
+                <div class="u-container-layout u-container-layout-3"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-4">
+                <div class="u-container-layout u-container-layout-4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-3">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-5">
+                <div class="u-container-layout u-container-layout-5"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-6">
+                <div class="u-container-layout u-container-layout-6"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-4">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-7">
+                <div class="u-container-layout u-container-layout-7"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-8">
+                <div class="u-container-layout u-container-layout-8"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-5">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-9">
+                <div class="u-container-layout u-container-layout-9"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-10">
+                <div class="u-container-layout u-container-layout-10"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="u-text u-text-default u-text-3">Compare with manual result (left), actually automaic result isn't that good. My conclusion is that the corresponding point pairs produced by automatic process is biased to concentrate on lower part of the image, which makes the upper part skewed.</p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-6">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-11" data-image-width="1600" data-image-height="1067">
+                <div class="u-container-layout u-container-layout-11"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-12" data-image-width="1600" data-image-height="1067">
+                <div class="u-container-layout u-container-layout-12"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="u-text u-text-default u-text-4">manual</p>
+        <p class="u-text u-text-default u-text-5">automatic</p>
+      </div>
+    </section>
+    <section class="u-clearfix u-section-9" id="sec-3926">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h2 class="u-text u-text-default u-text-palette-3-base u-text-1">Third Example</h2>
+        <p class="u-text u-text-default u-text-2">In this example, I use images from google map so they are captured at 1 fixed location. The overlapped part is still a little bit blured.</p>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-1">
+                <div class="u-container-layout u-container-layout-1"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-2" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-2">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-3" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-3"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-4" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-3">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-5" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-5"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-6" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-6"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-4">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-7" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-7"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-8" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-8"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-5">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-style u-image u-layout-cell u-left-cell u-size-30 u-image-9" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-9"></div>
+              </div>
+              <div class="u-container-style u-image u-layout-cell u-right-cell u-size-30 u-image-10" data-image-width="1800" data-image-height="1200">
+                <div class="u-container-layout u-container-layout-10"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    
+    <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-b697"><div class="u-clearfix u-sheet u-sheet-1">
+        <p class="u-small-text u-text u-text-variant u-text-1">Sainan Chen</p>
+      </div></footer>
+    <section class="u-backlink u-clearfix u-grey-80">
+      <a class="u-link" href="https://nicepage.com/website-templates" target="_blank">
+        <span>Website Templates</span>
+      </a>
+      <p class="u-text">
+        <span>created with</span>
+      </p>
+      <a class="u-link" href="https://nicepage.com/" target="_blank">
+        <span>Website Builder Software</span>
+      </a>. 
+    </section>
+  </body>
+</html>
